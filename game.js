@@ -4,12 +4,19 @@ const gameContent = document.getElementById('gameContent');
 gameContent.textContent = '';
 
 const allLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',];
+const phrases = ['hope for the best plan for the worst', 'keep your friends close and your enemies closer'];
 
+function randomPhrase () {
+  const phraseIndex = Math.floor(Math.random() * phrases.length);
+
+  return phrases[phraseIndex];
+};
 
 const gameState = {
   name: '',
   activeView: 'welcome', 
   selectedLetters: [],
+  secretPhrase: '',
 };
 
 function stateUpdate(newGameState) {
@@ -33,7 +40,7 @@ function welcomeView () {
   const playButton = document.createElement('button');
   playButton.textContent = 'Play game!';
   playButton.addEventListener('click', () => {
-    stateUpdate({ activeView: 'play', selectedLetters: [] });
+    stateUpdate({ activeView: 'play', selectedLetters: [], secretPhrase: randomPhrase() });
   });
 
   setTimeout( () => {
@@ -52,7 +59,18 @@ function playView() {
   const header = document.createElement('h1');
   header.textContent = 'Hi ' + gameState.name + '!';
 
+  const phraseLettersContainer = document.createElement('div');
+  const phraseLetters = gameState.secretPhrase.split('');
+  phraseLetters.forEach(phraseLetter => {
+    const phraseLetterSpan = document.createElement('span');
+    const phraseLetterVisible = phraseLetter === ' ' || gameState.selectedLetters.includes(phraseLetter);
+
+    phraseLetterSpan.textContent = phraseLetterVisible ? phraseLetter : '*';
+    phraseLettersContainer.appendChild(phraseLetterSpan);
+  });
+
   const buttonsContainer = document.createElement('div');
+
   for (let i =0; i < allLetters.length; i++) {
     const letterButton = document.createElement('button');
     const letter = allLetters[i];
@@ -74,6 +92,7 @@ function playView() {
   });
 
   gameContent.appendChild(header);
+  gameContent.appendChild(phraseLettersContainer);
   gameContent.appendChild(buttonsContainer);
   gameContent.appendChild(endGameButton);
 };
